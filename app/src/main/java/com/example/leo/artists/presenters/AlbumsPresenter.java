@@ -5,6 +5,8 @@ import com.example.leo.artists.model.responses.AlbumsResponse;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -18,6 +20,7 @@ public class AlbumsPresenter {
     private AlbumsPresenter.AlbumsView mView;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
+    @Inject
     public AlbumsPresenter(AlbumsView albumsView) {
         this.mView = albumsView;
     }

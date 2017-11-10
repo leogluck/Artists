@@ -1,7 +1,7 @@
 package com.example.leo.artists.views;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -12,16 +12,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.leo.artists.R;
+import com.example.leo.artists.di.components.DaggerAlbumsComponent;
+import com.example.leo.artists.di.modules.AlbumsPresenterModule;
 import com.example.leo.artists.model.responses.AlbumsResponse;
 import com.example.leo.artists.presenters.AlbumsPresenter;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class AlbumsActivity extends AppCompatActivity implements AlbumsPresenter.AlbumsView {
 
+    @Inject
+    AlbumsPresenter mAlbumsPresenter;
+
     public static final String ARTIST_NAME = "ARTIST_NAME";
-    private AlbumsPresenter mAlbumsPresenter;
+//    private AlbumsPresenter mAlbumsPresenter;
     private RecyclerView mAlbumsList;
 
     @Override
@@ -31,7 +38,11 @@ public class AlbumsActivity extends AppCompatActivity implements AlbumsPresenter
 
         String artistName = getIntent().getStringExtra(ARTIST_NAME);
 
-        mAlbumsPresenter = new AlbumsPresenter(this);
+        DaggerAlbumsComponent.builder()
+                .albumsPresenterModule(new AlbumsPresenterModule(this))
+                .build()
+                .inject(this);
+//        mAlbumsPresenter = new AlbumsPresenter(this);
         mAlbumsPresenter.loadAlbums(artistName);
 
         mAlbumsList = (RecyclerView) findViewById(R.id.albumsList);

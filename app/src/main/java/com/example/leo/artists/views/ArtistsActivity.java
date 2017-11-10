@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
 
 public class ArtistsActivity extends AppCompatActivity implements ArtistsPresenter.ArtistsView {
 
@@ -39,7 +38,7 @@ public class ArtistsActivity extends AppCompatActivity implements ArtistsPresent
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artists);
-        ButterKnife.bind(this);
+//        ButterKnife.bind(this);
         DaggerArtistComponent.builder()
                 .artistPresenterModule(new ArtistPresenterModule(this))
                 .build()

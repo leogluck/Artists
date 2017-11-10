@@ -33,8 +33,7 @@ public class ArtistResponse {
         public void setSize(String size) { this.size = size; }
     }
 
-    public class Artist
-    {
+    public class Artist {
         private String name;
 
         public String getName() { return this.name; }
