@@ -1,5 +1,6 @@
 package com.example.leo.artists.model;
 
+import com.example.leo.artists.model.responses.AlbumsResponse;
 import com.example.leo.artists.model.responses.ArtistResponse;
 
 import io.reactivex.Observable;
@@ -15,7 +16,8 @@ import retrofit2.http.Query;
 
 public class ApiService {
     private static final String BASE_URL = "http://ws.audioscrobbler.com/";
-    private static final String METHOD = "geo.gettopartists";
+    private static final String METHOD_COUNTRY = "geo.gettopartists";
+    private static final String METHOD_ARTIST = "artist.gettopalbums";
     private static final String API_KEY ="e81f61890b7ff8633ca024d0faa449e7";
     private static final String FORMAT ="json";
     private ApiInterface mApiInterface;
@@ -35,7 +37,11 @@ public class ApiService {
     }
 
     public Observable<ArtistResponse> getArtists (String country) {
-        return mApiInterface.getArtists(METHOD, country, API_KEY, FORMAT);
+        return mApiInterface.getArtists(METHOD_COUNTRY, country, API_KEY, FORMAT);
+    }
+
+    public Observable<AlbumsResponse> getAlbums (String artist) {
+        return mApiInterface.getAlbums(METHOD_ARTIST, artist, API_KEY, FORMAT);
     }
 
     interface ApiInterface {
@@ -43,6 +49,10 @@ public class ApiService {
         @GET("2.0/")
         Observable<ArtistResponse> getArtists (@Query("method") String method, @Query("country") String country,
                                            @Query("api_key") String apiKey, @Query("format") String format);
+
+        @GET("2.0/")
+        Observable<AlbumsResponse> getAlbums (@Query("method") String method, @Query("artist") String country,
+                                              @Query("api_key") String apiKey, @Query("format") String format);
 
     }
 }

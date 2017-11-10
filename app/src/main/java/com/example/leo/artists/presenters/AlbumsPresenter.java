@@ -1,39 +1,35 @@
 package com.example.leo.artists.presenters;
 
 import com.example.leo.artists.model.ApiService;
-import com.example.leo.artists.model.responses.ArtistResponse;
+import com.example.leo.artists.model.responses.AlbumsResponse;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Created by Leo on 08.11.2017
+ * Created by Leo on 09.11.2017
  */
 
-public class ArtistsPresenter {
+public class AlbumsPresenter {
 
-    private final static String COUNTRY = "ukraine";
-    private ArtistsView mView;
+    private AlbumsPresenter.AlbumsView mView;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-
-    @Inject
-    public ArtistsPresenter(ArtistsView artistsView) {
-        mView = artistsView;
+    public AlbumsPresenter(AlbumsView albumsView) {
+        this.mView = albumsView;
     }
 
-    public void loadArtists() {
+    public void loadAlbums(String name) {
+
         compositeDisposable.add(
-                ApiService.getInstance().getArtists(COUNTRY)
+                ApiService.getInstance().getAlbums(name)
                         .subscribeOn(Schedulers.computation())
-                        .map(artistResponse -> artistResponse.getTopArtists().getArtist())
+                        .map(albumsResponse -> albumsResponse.getTopalbums().getAlbum())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(artists -> mView.showArtists(artists),
+                        .subscribe(albums -> mView.showAlbums(albums),
                                 throwable -> mView.showError(throwable)));
     }
 
@@ -41,8 +37,8 @@ public class ArtistsPresenter {
         compositeDisposable.dispose();
     }
 
-    public interface ArtistsView {
-        void showArtists(List<ArtistResponse.Artist> artists);
+    public interface AlbumsView {
+        void showAlbums(List<AlbumsResponse.Album> albums);
 
         void showError(Throwable throwable);
     }

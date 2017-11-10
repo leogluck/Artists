@@ -1,7 +1,8 @@
 package com.example.leo.artists.views;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,22 +12,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.leo.artists.R;
+import com.example.leo.artists.di.components.DaggerArtistComponent;
+import com.example.leo.artists.di.modules.ArtistPresenterModule;
 import com.example.leo.artists.model.responses.ArtistResponse;
 import com.example.leo.artists.presenters.ArtistsPresenter;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import butterknife.BindView;
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 
 public class ArtistsActivity extends AppCompatActivity implements ArtistsPresenter.ArtistsView {
 
-    private ArtistsPresenter mArtistsPresenter;
+    @Inject
+    ArtistsPresenter mArtistsPresenter;
 
-    @BindView(R.id.artistList)
-    RecyclerView mArtistList;
-
+    private RecyclerView mArtistList;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
@@ -37,13 +40,15 @@ public class ArtistsActivity extends AppCompatActivity implements ArtistsPresent
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artists);
         ButterKnife.bind(this);
+        DaggerArtistComponent.builder()
+                .artistPresenterModule(new ArtistPresenterModule(this))
+                .build()
+                .inject(this);
 
-        mArtistsPresenter = new ArtistsPresenter(this);
         mArtistsPresenter.loadArtists();
 
+        mArtistList = (RecyclerView) findViewById(R.id.artistList);
         mArtistList.setHasFixedSize(true);
-
-        // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
         mArtistList.setLayoutManager(mLayoutManager);
     }
@@ -81,8 +86,17 @@ public class ArtistsActivity extends AppCompatActivity implements ArtistsPresent
                 mImage = view.findViewById(R.id.artistImage);
                 mArtistName = view.findViewById(R.id.artistName);
                 mListenerCount = view.findViewById(R.id.listenersCount);
+
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override public void onClick(View v) {
+                        int pos = getAdapterPosition();
+                        openAlbumsActivity(mArtists.get(pos).getName());
+                    }
+                });
             }
         }
+
+
 
         public ArtistAdapter(List<ArtistResponse.Artist> artists) {
             mArtists = artists;
@@ -107,10 +121,15 @@ public class ArtistsActivity extends AppCompatActivity implements ArtistsPresent
                     .getImages().get(2).getText()).into(holder.mImage);
         }
 
-        // Return the size of your dataset (invoked by the layout manager)
         @Override
         public int getItemCount() {
             return mArtists.size();
         }
+    }
+
+    private void openAlbumsActivity(String name) {
+        Intent intent = new Intent(this, AlbumsActivity.class);
+        intent.putExtra(AlbumsActivity.ARTIST_NAME, name);
+        startActivity(intent);
     }
 }
